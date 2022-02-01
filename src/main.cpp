@@ -19,9 +19,9 @@ int main(int argc, char const *argv[]) {
     }
   }
 
-  std::map<NodeId, Node*> nodeMap = buildNodeMap(rows, columns);
+  std::map<NodeId, Node*> nodeMap = utils::buildNodeMap(rows, columns);
 
-  bellmanFordMoore(rows, columns, weightMatrix, &nodeMap);
+  utils::bellmanFordMoore(rows, columns, weightMatrix, &nodeMap);
 
   NodeId source = NodeId(-1, 0);
   Node* sourceNode = nodeMap[source];

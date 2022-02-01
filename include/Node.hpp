@@ -20,6 +20,8 @@ class Node {
     Node* successor;
     std::vector<NodeId> incomingNeighbors;
     NodeType type;
+    bool wasUpdatedLast;
+    bool wasUpdated;
 
   private:
     void setIncomingNeighbors(int n, int m);

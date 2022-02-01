@@ -1,7 +1,7 @@
 #include <iostream>
 #include "utils.hpp"
 
-std::map<NodeId, Node*> buildNodeMap(int rows, int columns) {
+std::map<NodeId, Node*> utils::buildNodeMap(int rows, int columns) {
   std::map<NodeId, Node*> nodeMap;
 
   Node* source = new Node(-1, 0, rows, columns, NodeType::SOURCE);
@@ -19,13 +19,15 @@ std::map<NodeId, Node*> buildNodeMap(int rows, int columns) {
   return nodeMap;
 }
 
-void bellmanFordMoore(int rows, int columns, int** weights, std::map<NodeId, Node*>* nodeMap) {  
+void utils::bellmanFordMoore(int rows, int columns, int** weights, std::map<NodeId, Node*>* nodeMap) {  
   bool updatedAny; 
 
   for (int i = 0; i < (rows*columns) - 1; i++) {
     updatedAny = false;
 
     for (auto it : *nodeMap) {
+      if (!it.second->wasUpdatedLast) continue;
+
       for (NodeId neighbor : it.second->incomingNeighbors) {
         Node* node = (*nodeMap)[neighbor];
         int edgeWeight = 0;
@@ -35,9 +37,15 @@ void bellmanFordMoore(int rows, int columns, int** weights, std::map<NodeId, Nod
         if (node->shortestKnownPath > it.second->shortestKnownPath + edgeWeight && it.second->shortestKnownPath != INFINITY) {
           node->shortestKnownPath = it.second->shortestKnownPath + edgeWeight;
           node->successor = it.second;
+          node->wasUpdated = true;
           updatedAny = true;
         }
       }
+    }
+
+    for (auto it : *nodeMap) {
+      it.second->wasUpdatedLast = it.second->wasUpdated;
+      it.second->wasUpdated = false;
     }
 
     if (!updatedAny) break;

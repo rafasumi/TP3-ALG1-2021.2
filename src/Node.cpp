@@ -3,9 +3,11 @@
 
 Node::Node(int row, int column, int n, int m, NodeType type) {
   this->id = NodeId(row, column);
-  this->shortestKnownPath = INFINITY;
+  this->shortestKnownPath = utils::INFINITY;
   this->successor = nullptr;
   this->type = type;
+  this->wasUpdatedLast = true;
+  this->wasUpdated = false;
 
   if (type == NodeType::DEST) {
     this->shortestKnownPath = 0;
