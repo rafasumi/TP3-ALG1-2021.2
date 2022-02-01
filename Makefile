@@ -1,5 +1,5 @@
 CC = g++
-CXXFLAGS = -std=c++11 -g -Wall
+CXXFLAGS = -std=c++11
 
 INCLUDE_FOLDER = ./include/
 OBJ_FOLDER = ./obj/
