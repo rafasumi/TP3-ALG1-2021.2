@@ -1,53 +1,39 @@
-#include <iostream>
 #include "utils.hpp"
 
-std::map<NodeId, Node*> utils::buildNodeMap(int rows, int columns) {
-  std::map<NodeId, Node*> nodeMap;
+std::vector<Node*> utils::buildNodeList(int rows, int columns) {
+  std::vector<Node*> nodeList;
 
   Node* source = new Node(-1, 0, rows, columns, NodeType::SOURCE);
-  Node* dest = new Node(rows, columns, rows, columns, NodeType::DEST);
-  nodeMap.insert(std::pair<NodeId, Node*>(source->id, source));
-  nodeMap.insert(std::pair<NodeId, Node*>(dest->id, dest));
+  nodeList.push_back(source);
 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < columns; j++) {
       Node* node = new Node(i, j, rows, columns, NodeType::COMMON);
-      nodeMap.insert(std::pair<NodeId, Node*>(node->id, node));
+      nodeList.push_back(node);
     }
   }
 
-  return nodeMap;
+  Node* dest = new Node(rows, columns, rows, columns, NodeType::DEST);
+  nodeList.push_back(dest);
+
+  return nodeList;
 }
 
-void utils::bellmanFordMoore(int rows, int columns, int** weights, std::map<NodeId, Node*>* nodeMap) {  
-  bool updatedAny; 
+void utils::longestPath(int rows, int columns, int** weights, std::vector<Node*>* nodeList) {  
+  for (int j = nodeList->size() - 1; j >= 0; j--) {
+    Node* node = nodeList->at(j);
 
-  for (int i = 0; i < (rows*columns) - 1; i++) {
-    updatedAny = false;
+    for (int neighbor : node->incomingNeighbors) {
+      Node* neighborNode = nodeList->at(neighbor);
 
-    for (auto it : *nodeMap) {
-      if (!it.second->wasUpdatedLast) continue;
+      int edgeWeight = 0;
+      if (node->type == NodeType::COMMON)
+        edgeWeight = weights[node->row][node->column];
 
-      for (NodeId neighbor : it.second->incomingNeighbors) {
-        Node* node = (*nodeMap)[neighbor];
-        int edgeWeight = 0;
-        if (node->type == NodeType::COMMON)
-          edgeWeight = weights[neighbor.first][neighbor.second];
-
-        if (node->shortestKnownPath > it.second->shortestKnownPath + edgeWeight && it.second->shortestKnownPath != INFINITY) {
-          node->shortestKnownPath = it.second->shortestKnownPath + edgeWeight;
-          node->successor = it.second;
-          node->wasUpdated = true;
-          updatedAny = true;
-        }
+      if (node->longestKnownPath + edgeWeight >= neighborNode->longestKnownPath) {
+        neighborNode->longestKnownPath = node->longestKnownPath + edgeWeight;
+        neighborNode->predecessor = node;
       }
     }
-
-    for (auto it : *nodeMap) {
-      it.second->wasUpdatedLast = it.second->wasUpdated;
-      it.second->wasUpdated = false;
-    }
-
-    if (!updatedAny) break;
   }
 }

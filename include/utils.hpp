@@ -1,15 +1,15 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <map>
+#include <vector>
 #include <limits>
 #include "Node.hpp"
 
 namespace utils {
-  const int INFINITY = 300000;
+  const int NEG_INFINITY = std::numeric_limits<int>::min();;
 
-  std::map<NodeId, Node*> buildNodeMap(int rows, int columns);
-  void bellmanFordMoore(int rows, int columns, int** weights, std::map<NodeId, Node*>* nodeMap);
+  std::vector<Node*> buildNodeList(int rows, int columns);
+  void longestPath(int rows, int columns, int** weights, std::vector<Node*>* nodeList);
 }
 
 #endif

@@ -1,5 +1,5 @@
 #include <iostream>
-#include <map>
+#include <vector>
 #include "utils.hpp"
 #include "Node.hpp"
 
@@ -11,34 +11,31 @@ int main(int argc, char const *argv[]) {
   for (int i = 0; i < rows; i++) 
     weightMatrix[i] = new int[columns];
 
-  int weight;
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < columns; j++) {
-      std::cin >> weight;
-      weightMatrix[i][j] = -1*weight;
+      std::cin >> weightMatrix[i][j];
     }
   }
 
-  std::map<NodeId, Node*> nodeMap = utils::buildNodeMap(rows, columns);
+  std::vector<Node*> nodeList = utils::buildNodeList(rows, columns);
 
-  utils::bellmanFordMoore(rows, columns, weightMatrix, &nodeMap);
+  utils::longestPath(rows, columns, weightMatrix, &nodeList);
 
-  NodeId source = NodeId(-1, 0);
-  Node* sourceNode = nodeMap[source];
+  Node* sourceNode = nodeList[0];
 
-  int largestPath = -1*sourceNode->shortestKnownPath;
+  int largestPath = sourceNode->longestKnownPath;
   std::cout << largestPath << std::endl;
 
-  Node* successor = sourceNode->successor;
-  while (successor != nullptr) {
-    if (successor->id.second < columns)
-      std::cout << successor->id.second << " ";
-    successor = successor->successor;
+  Node* predecessor = sourceNode->predecessor;
+  while (predecessor != nullptr) {
+    if (predecessor->column < columns)
+      std::cout << predecessor->column << " ";
+    predecessor = predecessor->predecessor;
   }
   std::cout << std::endl;
-
-  for (auto it : nodeMap)
-    delete it.second;
+  
+  for (Node* node : nodeList)
+    delete node;
 
   for (int i = 0; i < rows; i++) 
     delete[] weightMatrix[i];
