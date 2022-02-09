@@ -40,9 +40,8 @@ int main(int argc, char const *argv[]) {
   // Caminha pelos nós que compõem o maior caminho do nó de origem. Nesse caso, o valor que se deseja extrair é a coluna das
   // macieiras que esses nós representam 
   Node* successor = sourceNode->successor;
-  while (successor != nullptr) {
-    if (successor->type == NodeType::COMMON)
-      std::cout << successor->column << " ";
+  while (successor != nullptr && successor->type == NodeType::COMMON) {
+    std::cout << successor->column << " ";
     successor = successor->successor;
   }
   std::cout << std::endl;
